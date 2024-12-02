@@ -2,7 +2,6 @@
 
 import { BACKEND_URL } from "@/lib/constants";
 import { createSession } from "@/lib/session";
-import { redirect } from "next/navigation";
 import { SignupFormSchema } from "schemas/SignupFormSchema";
 
 export async function signUpAction(formData: FormData) {
