@@ -24,42 +24,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  SignupFormSchema,
-  SignupFormSchemaType,
-} from "schemas/SignupFormSchema";
 import { useMutation } from "@tanstack/react-query";
-import { signUpAction } from "../../_actions/auth";
+import { signInAction } from "../../_actions/auth";
 import { toast } from "sonner";
+import { LoginFormSchema, LoginFormSchemaType } from "schemas/LoginForm.schema";
+import { useRouter } from "next/navigation";
 
-const SignupForm = () => {
+const SigninForm = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const form = useForm<SignupFormSchemaType>({
-    resolver: zodResolver(SignupFormSchema),
+  const form = useForm<LoginFormSchemaType>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
 
   const mutation = useMutation({
-    mutationFn: (data: FormData) => signUpAction(data),
+    mutationFn: (data: FormData) => signInAction(data),
     onSuccess: () => {
       form.reset();
-      toast.success("Account created successfully!");
-      // router.push("/auth/signin");
+      toast.success("Account sign in successfully!");
+      router.push("/");
+      router.refresh();
     },
     onError: (error: Error) => {
-      const errorMessage = error.message || "Failed to create account!";
+      const errorMessage = error.message || "Failed to sign in account!";
       toast.error(errorMessage);
     },
   });
 
-  function onSubmit(data: SignupFormSchemaType) {
+  function onSubmit(data: LoginFormSchemaType) {
     const formData = new FormData();
-    formData.append("name", data.name);
     formData.append("email", data.email);
     formData.append("password", data.password);
 
@@ -71,27 +69,13 @@ const SignupForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
+            <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Enter your details to create an account
+              Enter your details to signin an account
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="name">Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="email"
@@ -155,16 +139,16 @@ const SignupForm = () => {
                   Loading...
                 </>
               ) : (
-                <>Register</>
+                <>Sign In</>
               )}
             </Button>
             <p className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
-                href="/auth/signin"
+                href="/auth/signup"
                 className="text-primary hover:underline"
               >
-                Sign in
+                Register
               </Link>
             </p>
           </CardFooter>
@@ -174,4 +158,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default SigninForm;
